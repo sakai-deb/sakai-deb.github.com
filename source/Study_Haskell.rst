@@ -2,9 +2,8 @@
 Study Haskell!!
 =============================
 
-:author: sakai
-:date:   2012/10/04
+:date:   |today|
 
-Contents List
+目次の予定
 ==============
 頑張るよ!
