@@ -69,15 +69,15 @@
 <div class="contents local topic" id="id1">
 <p class="topic-title first">目次</p>
 <ul class="simple">
-<li><a class="reference internal" href="#id2" id="id18">0. 参考文献</a></li>
-<li><a class="reference internal" href="#id4" id="id19">1. 色々書く前に...</a><ul>
-<li><a class="reference internal" href="#id5" id="id20">1.1 分類の基準</a></li>
-<li><a class="reference internal" href="#id6" id="id21">1.2 分類の例</a></li>
+<li><a class="reference internal" href="#id2" id="id19">0. 参考文献</a></li>
+<li><a class="reference internal" href="#id4" id="id20">1. 色々書く前に...</a><ul>
+<li><a class="reference internal" href="#id5" id="id21">1.1 分類の基準</a></li>
+<li><a class="reference internal" href="#id6" id="id22">1.2 分類の例</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#hakell" id="id22">2. Hakell の特徴</a><ul>
-<li><a class="reference internal" href="#id7" id="id23">2.1 遅延評価</a></li>
-<li><a class="reference internal" href="#id12" id="id24">2.2 純粋関数型</a></li>
+<li><a class="reference internal" href="#id7" id="id23">2. Haskell の特徴</a><ul>
+<li><a class="reference internal" href="#id8" id="id24">2.1 遅延評価</a></li>
+<li><a class="reference internal" href="#id13" id="id25">2.2 純粋関数型</a></li>
 </ul>
 </li>
 </ul>
@@ -104,12 +104,12 @@
 <li><div class="first line-block">
 <div class="line">処理系の性質:</div>
 <div class="line">- コンパイル型   : プログラムを一度機械語に変換した後に実行する (コンパイルした方が早い派)</div>
-<div class="line">- 中間言語       : プログラムを一度別の言語に変換する。 (他の言語に任せよう派)</div>
+<div class="line">- 中間言語       : プログラムを別の言語に変換する。 (他の言語に任せよう派)</div>
 <div class="line">- インタプリタ型 : プログラムを逐次解釈して実行する (コンパイルめんどくさい派)</div>
 </div>
 </li>
 <li><div class="first line-block">
-<div class="line">スタイル: そんなに明確に分けられない</div>
+<div class="line">スタイル: 明確に分けられない</div>
 <div class="line">- 手続き型         : 実行すべき手順そのものを書く。</div>
 <div class="line">- 関数型           : (手続き型言語の意味でない、数学の意味の)関数を書く。</div>
 <div class="line">- 論理型           : 述語論理。Predicate, Fact, Rule, query などを書く。</div>
@@ -130,7 +130,7 @@
 <div class="line-block">
 <div class="line">Wikipedia, 言語ごとのサイトの説明, 伝聞などから作りました。</div>
 <div class="line">スタイルについては、勝手に決めたものがあります。(バージョンに依存しているもの, マルチパラダイムな言語など。)</div>
-<div class="line">また、型の強弱、関数型でも純粋かどうか、などあるらしいですが、ここでは忘れます。</div>
+<div class="line">また、型の強弱、関数型でも純粋かどうかなどは、ここでは忘れます。</div>
 </div>
 <table border="1" class="docutils">
 <colgroup>
@@ -188,7 +188,7 @@ Java,C#,D</td>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>コンパイル型</td>
-<td>C, D, Java, Haskell</td>
+<td>C, D, Java, <strong>Haskell</strong></td>
 </tr>
 <tr class="row-even"><td>中間言語</td>
 <td>Hexe(-&gt;C#,JavaScript,ActionScript), TypeScript(-&gt;JavaScript),
@@ -199,11 +199,11 @@ Java,JRuby,Jython(-&gt; Java の仮想マシンのコード)</td>
 </tr>
 </tbody>
 </table>
-<p>処理系については個人的には、あまり重要なことではないので、以下ではあまり気にしないことにします。</p>
+<p>処理系については個人的には、あまり重要なことではないので、以下では気にしません。</p>
 </div>
 </div>
-<div class="section" id="hakell">
-<h2>2. Hakell の特徴<a class="headerlink" href="#hakell" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id7">
+<h2>2. Haskell の特徴<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h2>
 <p>さて、 Haskell の特徴について考えていきましょう。
 良く言われることとして以下のことがあります。</p>
 <ul>
@@ -225,31 +225,31 @@ Java,JRuby,Jython(-&gt; Java の仮想マシンのコード)</td>
 </li>
 </ul>
 <p>以下では、それぞれがどういう意味なのか、具体例をまじえて見ていくことにします。</p>
-<div class="section" id="id7">
-<h3>2.1 遅延評価<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="id8">
+<h3>2.1 遅延評価<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <p><strong>遅延評価</strong> とは、式の評価をできる限り必要になるまで放置する、というものです。</p>
 <p>これは非常に強力です。特に、無限リストを簡単に書くことができます。</p>
-<div class="section" id="id8">
-<h4>例1. 無限リスト1 : 1,1,...<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<div class="section" id="id9">
+<h4>例1. 無限リスト1 : 1,1,...<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <div class="highlight-haskell"><div class="highlight"><pre><span class="nf">ones</span> <span class="ow">=</span> <span class="mi">1</span><span class="kt">:</span><span class="n">ones</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id9">
-<h4>例2. 無限リスト2 : 2,4,6,8,10,...<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<div class="section" id="id10">
+<h4>例2. 無限リスト2 : 2,4,6,8,10,...<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <div class="highlight-haskell"><div class="highlight"><pre><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id10">
-<h4>例3. 2つの無限リストの各要素の和 :<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<div class="section" id="id11">
+<h4>例3. 2つの無限リストの各要素の和 :<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <div class="highlight-haskell"><div class="highlight"><pre><span class="p">[</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span> <span class="o">|</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">zip</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="o">..</span><span class="p">]</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="o">..</span><span class="p">]</span> <span class="p">]</span>
 </pre></div>
 </div>
 <p>これは、２つのリストの要素を、前から順に足して無限リストを返しています。</p>
 </div>
-<div class="section" id="id11">
-<h4>例4. 無限リストの評価<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<div class="section" id="id12">
+<h4>例4. 無限リストの評価<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <p>これらのリストを実際に使う場合にはどうなるのでしょうか。</p>
 <div class="highlight-haskell"><div class="highlight"><pre><span class="nf">take</span> <span class="mi">3</span> <span class="n">ones</span> <span class="c1">-- ones の3番目までの要素を返す</span>
 </pre></div>
@@ -266,8 +266,8 @@ Java,JRuby,Jython(-&gt; Java の仮想マシンのコード)</td>
 <p>すごい Haskell!!</p>
 </div>
 </div>
-<div class="section" id="id12">
-<h3>2.2 純粋関数型<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="id13">
+<h3>2.2 純粋関数型<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h3>
 <div class="line-block">
 <div class="line">Haskell では、 <em>&#8220;関数を引数に適用すること&#8221;</em> がプログラミングです。</div>
 <div class="line">そして、すべてが関数です。(純粋!)</div>
@@ -284,14 +284,14 @@ Java,JRuby,Jython(-&gt; Java の仮想マシンのコード)</td>
 </div>
 <p>1+1 つまり結果は 2</p>
 </div>
-<div class="section" id="id13">
-<h4>例2. 名前 : 引数を取らない関数<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<div class="section" id="id14">
+<h4>例2. 名前 : 引数を取らない関数<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <div class="highlight-haskell"><div class="highlight"><pre><span class="nf">language</span> <span class="ow">=</span> <span class="s">&quot;Haskell!!&quot;</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="id14">
-<h4>例3. 少し複雑な関数 : 100 より大きい数を2倍する<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<div class="section" id="id15">
+<h4>例3. 少し複雑な関数 : 100 より大きい数を2倍する<a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <div class="highlight-haskell"><div class="highlight"><pre><span class="nf">doubleNumber</span> <span class="n">x</span> <span class="ow">=</span> <span class="kr">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="kr">then</span> <span class="n">x</span> <span class="kr">else</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span>
 </pre></div>
 </div>
@@ -301,8 +301,8 @@ Java,JRuby,Jython(-&gt; Java の仮想マシンのコード)</td>
 <p>次に、Haskell にとっては関数でないけど、Ruby などでは&#8221;関数&#8221;と呼ばれているものについて、
 特に問題だと思われる例を説明しましょう。</p>
 </div>
-<div class="section" id="id15">
-<h4>例. Haskell では関数でない例 : 擬似コード<a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<div class="section" id="id16">
+<h4>例. Haskell では関数でない例 : 擬似コード<a class="headerlink" href="#id16" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <div class="highlight-haskell"><div class="highlight"><pre><span class="nf">total</span><span class="kt">:=</span><span class="mi">0</span>
 <span class="nf">not_Function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="ow">=</span><span class="p">{</span>
    <span class="n">count</span> <span class="kt">:=</span> <span class="mi">0</span>
@@ -353,11 +353,11 @@ not_Function(2) &lt;- 結果は total=6 : どうして結果が変わるか考�
 </div>
 <p>続きはそのうち。</p>
 </div>
-<div class="section" id="id16">
-<h4>2.3 高階関数について<a class="headerlink" href="#id16" title="このヘッドラインへのパーマリンク">¶</a></h4>
-</div>
 <div class="section" id="id17">
-<h4>2.4 静的型付け<a class="headerlink" href="#id17" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<h4>2.3 高階関数について<a class="headerlink" href="#id17" title="このヘッドラインへのパーマリンク">¶</a></h4>
+</div>
+<div class="section" id="id18">
+<h4>2.4 静的型付け<a class="headerlink" href="#id18" title="このヘッドラインへのパーマリンク">¶</a></h4>
 </div>
 </div>
 </div>
