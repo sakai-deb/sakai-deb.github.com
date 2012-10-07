@@ -251,14 +251,14 @@ Java,JRuby,Jython(-&gt; Java の仮想マシンのコード)</td>
 <div class="section" id="id11">
 <h4>例4. 無限リストの評価<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h4>
 <p>これらのリストを実際に使う場合にはどうなるのでしょうか。</p>
-<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">take</span> <span class="mi">3</span> <span class="n">ones</span> <span class="c1">-- ones の3番目の要素を返す</span>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">take</span> <span class="mi">3</span> <span class="n">ones</span> <span class="c1">-- ones の3番目までの要素を返す</span>
 </pre></div>
 </div>
 <p>これを実行すると、次のようになる(ハズ。ホントのことはまだわかってない)。</p>
 <div class="highlight-python"><pre>take 3 ones
 = take 3 (1:ones)
 = take 3 (1:(1:ones))
-= take 3 (1:(1:(1:ones))) &lt;- 3番目の要素がわかった
+= take 3 (1:(1:(1:ones))) &lt;- 3番目までの要素がわかった
 = 1                       &lt;- 値を返す</pre>
 </div>
 <p>普通、プログラミングでは&#8221;有限のデータと有限の操作&#8221;しか扱えません。
