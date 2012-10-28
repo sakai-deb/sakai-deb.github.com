@@ -82,18 +82,19 @@
 <li><a class="reference internal" href="#id9" id="id25">2-0. クイックソートとは</a></li>
 <li><a class="reference internal" href="#id10" id="id26">2-1. やってみる</a></li>
 <li><a class="reference internal" href="#id11" id="id27">2-2. 実装してみる</a></li>
-<li><a class="reference internal" href="#id13" id="id28">2-3. 考えてみる</a></li>
+<li><a class="reference internal" href="#id12" id="id28">2-3. 考えてみる</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id14" id="id29">3. 比較してみる</a></li>
-<li><a class="reference internal" href="#id15" id="id30">4. まとめ</a></li>
+<li><a class="reference internal" href="#id13" id="id29">3. 比較してみる</a></li>
+<li><a class="reference internal" href="#id14" id="id30">4. まとめ</a></li>
 <li><a class="reference internal" href="#id16" id="id31">5. 参考</a></li>
 </ul>
 </div>
 <div class="section" id="id3">
 <h2><a class="toc-backref" href="#id2">0. 問題</a></h2>
 <p>リスト [3, 2, 5, 4, 1] の要素を並べ替えて、[1, 2, 3, 4, 5] にする手順を考えましょう。</p>
-<p>できるだけ少ない手順で並び替え(ソート)を行いたいと思っています。</p>
+<p>できるだけ少ない手順で並び替え(ソート)を行いたいと思っています。
+(あまり良く知らないので、配列をコピーする際のコストなどはあまり考えていません。)</p>
 </div>
 <div class="section" id="id4">
 <h2><a class="toc-backref" href="#id2">1. バブルソート</a></h2>
@@ -159,6 +160,9 @@
 <span class="nf">bubble</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Ord</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 <span class="nf">bubble</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">iterate</span> <span class="n">bubble_step</span> <span class="n">xs</span> <span class="o">!!</span> <span class="n">length</span> <span class="n">xs</span>
 </pre></div>
+</div>
+<div class="line-block">
+<div class="line">この実装は非常にメモリを食います。</div>
 </div>
 <ol class="arabic simple" start="2">
 <li>Ruby での実装例</li>
@@ -245,11 +249,6 @@
   <span class="kr">in</span> <span class="n">quicksort&#39;</span> <span class="n">smaller</span> <span class="o">++</span> <span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">++</span> <span class="n">quicksort&#39;</span> <span class="n">larger</span>
 </pre></div>
 </div>
-<div class="line-block">
-<div class="line">この実装はよく例に挙がる実装ですが、メモリ利用という点で非常に効率が良くないものです。</div>
-<div class="line">下記のRuby での実装は破壊的な操作を行うことでメモリを節約しています。</div>
-</div>
-<p>Haskell でのより良い実装については <a class="footnote-reference" href="#id17" id="id12">[1]</a> を参照してください。</p>
 <ol class="arabic simple" start="2">
 <li>Ruby での実装例</li>
 </ol>
@@ -277,7 +276,7 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="id13">
+<div class="section" id="id12">
 <h3><a class="toc-backref" href="#id2">2-3. 考えてみる</a></h3>
 <div class="line-block">
 <div class="line">まず、このアルゴリズムの良いところは、アルゴリズムを再帰で書けることです。</div>
@@ -291,7 +290,7 @@
 </div>
 </div>
 </div>
-<div class="section" id="id14">
+<div class="section" id="id13">
 <h2><a class="toc-backref" href="#id2">3. 比較してみる</a></h2>
 <p>上に書いた実装例で実行時間を測ってみました。</p>
 <p>具体的には、 長さ10万, 各要素は1~100万の間というリストをランダムに生成して、上に書いた実装例で実行時間を計測しました。
@@ -358,7 +357,7 @@
 <div class="line">*2 は、スタックが深すぎて途中で SystemStackError が投げられてしまいました。再帰を使わずに書いた方が良いかもしれません。</div>
 </div>
 </div>
-<div class="section" id="id15">
+<div class="section" id="id14">
 <h2><a class="toc-backref" href="#id2">4. まとめ</a></h2>
 <div class="line-block">
 <div class="line">以上のように、クイックソートは実装が簡単でありながらも、ランダムなデータに対して効率良いソート方法です。</div>
@@ -366,6 +365,9 @@
 </div>
 <div class="line-block">
 <div class="line">事前に何らかの構造を持ったデータであることがわかっている場合には、ソート方法をうまく選ぶと良いと思います。</div>
+</div>
+<div class="line-block">
+<div class="line">Haskell でのより良い実装については <a class="footnote-reference" href="#id17" id="id15">[1]</a> を参照してください。</div>
 </div>
 <hr class="docutils" />
 <div class="line-block">
@@ -377,7 +379,7 @@
 <table class="docutils footnote" frame="void" id="id17" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id12">[1]</a></td><td>: <a class="reference external" href="http://d.hatena.ne.jp/kazu-yamamoto/20120706/1341546985">あどけない話 - Haskellの配列でクイックソート</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id15">[1]</a></td><td>: <a class="reference external" href="http://d.hatena.ne.jp/kazu-yamamoto/20120706/1341546985">あどけない話 - Haskellの配列でクイックソート</a></td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="id18" rules="none">
