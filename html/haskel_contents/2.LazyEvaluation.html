@@ -64,14 +64,15 @@
 <div class="contents local topic" id="id2">
 <p class="topic-title first">目次</p>
 <ul class="simple">
-<li><a class="reference internal" href="#id3" id="id8">0. 概要</a></li>
-<li><a class="reference internal" href="#id4" id="id9">1. 準備</a><ul>
-<li><a class="reference internal" href="#or" id="id10">1.1 OR (||)</a></li>
-<li><a class="reference internal" href="#id5" id="id11">1.2 折り畳み</a></li>
+<li><a class="reference internal" href="#id3" id="id9">0. 概要</a></li>
+<li><a class="reference internal" href="#id4" id="id10">1. 準備</a><ul>
+<li><a class="reference internal" href="#or" id="id11">1.1 OR (||)</a></li>
+<li><a class="reference internal" href="#id5" id="id12">1.2 折り畳み</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6" id="id12">2. 止まるかどうか</a></li>
-<li><a class="reference internal" href="#id7" id="id13">3. まとめ</a></li>
+<li><a class="reference internal" href="#id6" id="id13">2. 止まるかどうか</a></li>
+<li><a class="reference internal" href="#id7" id="id14">3. まとめ</a></li>
+<li><a class="reference internal" href="#id8" id="id15">4. 余談</a></li>
 </ul>
 </div>
 <div class="section" id="id3">
@@ -185,6 +186,20 @@
 <h2><a class="toc-backref" href="#id2">3. まとめ</a></h2>
 <p>遅延評価すごい。</p>
 </div>
+<div class="section" id="id8">
+<h2><a class="toc-backref" href="#id2">4. 余談</a></h2>
+<p>Ruby でも遅延評価ができるようになると聞いてやってみた。
+(参考: <a class="reference external" href="https://speakerdeck.com/nagachika/rubyist-enumeratorlazy">https://speakerdeck.com/nagachika/rubyist-enumeratorlazy</a>)</p>
+<div class="highlight-ruby"><div class="highlight"><pre><span class="nb">p</span> <span class="o">[</span><span class="kp">true</span><span class="p">,</span> <span class="kp">false</span><span class="o">].</span><span class="n">cycle</span><span class="o">.</span><span class="n">lazy</span><span class="o">.</span><span class="n">any?</span>
+   <span class="c1"># =&gt; true</span>
+<span class="nb">p</span> <span class="o">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">].</span><span class="n">cycle</span><span class="o">.</span><span class="n">lazy</span><span class="o">.</span><span class="n">any?</span><span class="p">{</span><span class="o">|</span><span class="n">n</span><span class="o">|</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">}</span>
+   <span class="c1"># =&gt; true</span>
+<span class="c1">#p [true, false].cycle.lazy.reduce{|res, item| res || item}</span>
+   <span class="c1"># =&gt; これは結果が返らない</span>
+</pre></div>
+</div>
+<p>スライドを見る限り割と便利なので、早く Ruby 2.0 が標準になってほしい、と(Ruby 書けるわけでもないけど)思いました。</p>
+</div>
 </div>
 
 
@@ -201,7 +216,7 @@
 <script type="text/javascript">$('#searchbox').show(0);</script>
   <div id="recentpost">
 <h3>Recentpages</h3>
-<b>2012-11-12</b><br /><div style="margin-left:16px"><a href="haskel_contents/3.ModuleImport.html">Haskell でのモジュール import</a><br /></div><div style="margin-left:16px"><a href="haskel_contents/2.LazyEvaluation.html">関数の評価についての注意</a><br /></div><div style="margin-left:16px"><a href="haskel_contents/0.WhyHaskell.html">なぜ Haskell を使うのか?</a><br /></div><b>2012-11-08</b><br /><div style="margin-left:16px"><a href="references/refs.html">参考文献</a><br /></div><div style="margin-left:16px"><a href="Study_Haskell.html">Study Haskell!!</a><br /></div>
+<b>2012-11-13</b><br /><div style="margin-left:16px"><a href="haskel_contents/2.LazyEvaluation.html">関数の評価についての注意</a><br /></div><div style="margin-left:16px"><a href="haskel_contents/3.ModuleImport.html">Haskell でのモジュール import</a><br /></div><b>2012-11-12</b><br /><div style="margin-left:16px"><a href="haskel_contents/0.WhyHaskell.html">なぜ Haskell を使うのか?</a><br /></div><b>2012-11-08</b><br /><div style="margin-left:16px"><a href="references/refs.html">参考文献</a><br /></div><div style="margin-left:16px"><a href="Study_Haskell.html">Study Haskell!!</a><br /></div>
   </div>
   <div id="sidelinks">
     <h3>Links</h3>
@@ -229,7 +244,7 @@
 
 <div id="footer">
   &copy;copyright:2012, sakai <br />
-  Last update: Nov 12, 2012 <br />
+  Last update: Nov 13, 2012 <br />
   Created using Sphinx 1.1.3
 </div>
 
