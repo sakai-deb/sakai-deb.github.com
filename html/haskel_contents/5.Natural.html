@@ -175,22 +175,37 @@
 <div class="highlight-haskell"><div class="highlight"><pre><span class="kr">data</span> <span class="kt">[]</span> <span class="n">a</span> <span class="ow">=</span> <span class="kt">[]</span> <span class="o">|</span> <span class="n">a</span> <span class="kt">:</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 </pre></div>
 </div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">左辺:</th><td class="field-body">data [] a</td>
+</tr>
+</tbody>
+</table>
 <div class="line-block">
-<div class="line">まず、左辺 <tt class="docutils literal"><span class="pre">data</span> <span class="pre">[]</span> <span class="pre">a</span></tt></div>
 <div class="line-block">
 <div class="line">* a は型引数と呼ばれます。</div>
 <div class="line">* [] は型引数を取って、型をつくるので、型コンストラクタと呼ばれます。</div>
-<div class="line">* a が Int や Boolとしてみれば、[Int],[Bool] などが宣言されていることがわかります。([a] というのは、 [] a の略記です。)</div>
+<div class="line">* a が Int や Boolとしてみれば、[Int],[Bool] などが宣言されていることがわかります。</div>
 </div>
+<div class="line">[a] というのは、 [] a の略記です。</div>
 </div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">右辺:</th><td class="field-body">[] | a : [a]</td>
+</tr>
+</tbody>
+</table>
 <div class="line-block">
-<div class="line">次に右辺は、 <tt class="docutils literal"><span class="pre">[]</span> <span class="pre">|</span> <span class="pre">a</span> <span class="pre">:</span> <span class="pre">[a]</span></tt></div>
 <div class="line-block">
 <div class="line">* [] は 空の配列を表します。</div>
 <div class="line">* [a] が 右辺にも登場しています。これは再帰的なデータ型と呼ばれます。</div>
 <div class="line">* : は a, [a] という2つの引数をとっています。このように、引数を取って、データ型の値を返す関数を値コンストラクタと呼びます。</div>
 <div class="line-block">
-<div class="line">( (:) :: a -&gt; [a] -&gt; [a] となっています。)</div>
+<div class="line">(:) :: a -&gt; [a] -&gt; [a] となっています。</div>
 </div>
 </div>
 <div class="line">リストの例をあげれば、 1:[2:[3:[]]] はリストです。これを普段は、[1, 2, 3]と略記しています。</div>
