@@ -101,7 +101,8 @@
 <div class="line">データ型を定義してみましょう。</div>
 <div class="line">例えば、次の形式で定義できます。</div>
 </div>
-<div class="highlight-python"><pre>data (TypeName) = (TypeConstructer) [ | (TypeConstructer) | ... ] [deriving (TypeClass[,...])]</pre>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="kr">data</span> <span class="p">(</span><span class="kt">TypeName</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">TypeConstructer</span><span class="p">)</span> <span class="p">[</span> <span class="o">|</span> <span class="p">(</span><span class="kt">TypeConstructer</span><span class="p">)</span> <span class="o">|</span> <span class="o">...</span> <span class="p">]</span> <span class="p">[</span><span class="kr">deriving</span> <span class="p">(</span><span class="kt">TypeClass</span><span class="p">[,</span><span class="o">...</span><span class="p">])]</span>
+</pre></div>
 </div>
 <div class="line-block">
 <div class="line">TypeName, TypeConstructer, TypeClass を表す文字列は、大文字からはじめる必要があります。</div>
@@ -112,7 +113,7 @@
 </div>
 <div class="line-block">
 <div class="line">これで Weekday という型をつくることができました。</div>
-<div class="line">この型は、Sun, Mon, ...といったものを含みます。</div>
+<div class="line">この型は、Sun, Mon, ...といったものを含みます。それぞれWeekday型の値を返す関数(Haskell では引数がなくても関数)です。このようなdata型を定義する、値を返す関数は値コンストラクタと呼ばれます。</div>
 <div class="line">Int 型が10, 40, などといった数を含むのと同様に、Weekdayを定義できました。</div>
 <div class="line">一旦データ型が定義されれば、holiday :: Weekday -&gt; Bool のように、Weekdayからの関数などを自由に書くことができるようになります。</div>
 </div>
@@ -186,7 +187,7 @@
 <div class="line-block">
 <div class="line-block">
 <div class="line">* a は型引数と呼ばれます。</div>
-<div class="line">* [] は型引数を取って、型をつくるので、型コンストラクタと呼ばれます。</div>
+<div class="line">* [] は型引数を取って、型をつくります。型コンストラクタと呼ばれます。</div>
 <div class="line">* a が Int や Boolとしてみれば、[Int],[Bool] などが宣言されていることがわかります。</div>
 </div>
 <div class="line">[a] というのは、 [] a の略記です。</div>
@@ -203,7 +204,7 @@
 <div class="line-block">
 <div class="line">* [] は 空の配列を表します。</div>
 <div class="line">* [a] が 右辺にも登場しています。これは再帰的なデータ型と呼ばれます。</div>
-<div class="line">* : は a, [a] という2つの引数をとっています。このように、引数を取って、データ型の値を返す関数を値コンストラクタと呼びます。</div>
+<div class="line">* : は a, [a] という2つの引数をとっています。これは値コンストラクタと呼ぶのでした。</div>
 <div class="line-block">
 <div class="line">(:) :: a -&gt; [a] -&gt; [a] となっています。</div>
 </div>
