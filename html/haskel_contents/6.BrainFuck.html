@@ -1,0 +1,537 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Brainfuck &mdash; LinuxとHaskell</title>
+    
+    <link rel="stylesheet" href="../_static/main.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="LinuxとHaskell" href="../index.html" />
+    <link rel="up" title="Study Haskell!!" href="../Study_Haskell.html" />
+    <link rel="next" title="雑記" href="../Others.html" />
+    <link rel="prev" title="(代数的)データ型を定義する" href="5.Natural.html" /> 
+  </head>
+  <body>
+<div id="header">
+  <div id="globalnavi">
+    <ul>
+      <li><a href="../index.html">Main</a></li>
+      <li><a href="../aboutus/aboutus.html">About</a></li>
+      <li><a href="../references/refs.html">References</a></li>
+    </ul>
+  </div>
+  <div id="titledesign">
+<link href='http://fonts.googleapis.com/css?family=Bad+Script' rel='stylesheet' type='text/css'>
+    <h1><a href="../index.html">Study Haskell</a></h1>
+  </div>
+</div>
+
+
+
+
+
+    <div class="document">
+ <div id="document">
+  <div class="section" id="brainfuck">
+<h1>Brainfuck</h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">date:</th><td class="field-body">2013/02/15</td>
+</tr>
+</tbody>
+</table>
+<div class="contents local topic" id="id1">
+<p class="topic-title first">目次</p>
+<ul class="simple">
+<li><a class="reference internal" href="#id2" id="id19">1. 概要</a></li>
+<li><a class="reference internal" href="#id3" id="id20">2. Brainfuck とは</a><ul>
+<li><a class="reference internal" href="#id4" id="id21">2.1. Brainfuck の概要</a></li>
+<li><a class="reference internal" href="#id5" id="id22">2.2. Brainfuck の構文</a></li>
+<li><a class="reference internal" href="#id6" id="id23">2.3. Brainfuck の動作</a></li>
+<li><a class="reference internal" href="#id11" id="id24">2.4. Brainfuck プログラムの例</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#brainfuck-by-haskell" id="id25">3. Brainfuck by Haskell</a><ul>
+<li><a class="reference internal" href="#id14" id="id26">3.1. 構文</a></li>
+<li><a class="reference internal" href="#id15" id="id27">3.2. Brainfuck との対応</a></li>
+<li><a class="reference internal" href="#id16" id="id28">3.3. 実行</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id17" id="id29">4. まとめ</a></li>
+<li><a class="reference internal" href="#id18" id="id30">5. コード</a></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id1">1. 概要</a></h2>
+<ol class="arabic simple">
+<li>Haskell で Brainfuck の処理系を書く。</li>
+</ol>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id1">2. Brainfuck とは</a></h2>
+<div class="section" id="id4">
+<h3><a class="toc-backref" href="#id1">2.1. Brainfuck の概要</a></h3>
+<div class="line-block">
+<div class="line">Wikipedia の定義を見てみましょう。</div>
+<div class="line"><a class="reference external" href="http://en.wikipedia.org/wiki/Brainfuck">Brainfuck - Wikipedia</a></div>
+</div>
+<div class="line-block">
+<div class="line">まず、Brainfuck という言語は、次の8つのコマンドからなります。</div>
+</div>
+<div class="highlight-python"><pre>&gt; &lt; + - . , [ ]</pre>
+</div>
+<div class="line-block">
+<div class="line">言語の処理系としては、概ね</div>
+</div>
+<ol class="arabic simple">
+<li>プログラム (上記のコマンドを列挙したようなもの)</li>
+<li>プログラム中の文字をどこを読んでいるかを表すポインタ</li>
+<li>Int 型の配列 (要素は 0 に初期化)</li>
+<li>配列の要素のどこかを表すポインタ</li>
+<li>入出力ストリーム</li>
+</ol>
+<div class="line-block">
+<div class="line">があれば良いようです。</div>
+<div class="line">以下では、 コマンド以外の文字はすべて無視する処理系を作ることにします。</div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3><a class="toc-backref" href="#id1">2.2. Brainfuck の構文</a></h3>
+<div class="line-block">
+<div class="line">Brainfuck の構文を定義します。</div>
+<div class="line">任意の文字列に対して、文字列が Brainfuck のプログラムとして解釈されるかどうかが決まるはずなので、</div>
+<div class="line">Brainfuck のプログラムになる文字列を決めようということです。</div>
+<div class="line">コマンド以外の文字は読み飛ばすので、適当に扱うことにします。</div>
+</div>
+<div class="highlight-python"><pre>Comm = &gt; | &lt; | + | - | . | ,
+(Dust = {2.1 に挙げたコマンド以外のすべての文字})
+BF   = Comm (| Dust) | BF | [BF]</pre>
+</div>
+<div class="line-block">
+<div class="line">この BF が、 Brainfuck のプログラム全体です。</div>
+<div class="line">例えば、以下のような文字列は Brainfuck のプログラムです。</div>
+</div>
+<div class="highlight-python"><pre>1. +++++++,&lt;&lt;&lt;++.&gt;+&gt;&gt;+++.++++&lt;&lt;&lt;+++.&gt;.++++++&gt;&gt;++++++++++++++++++++---&lt;&lt;&lt;&lt;&lt;&lt;&lt;&gt;&gt;&gt;&gt;[-&gt;+[-]&lt;]&lt;&lt;[-]
+2. 9313rkok;+..+&gt;&gt;&gt;.,&lt;&lt;,&lt;,?&lt;,.
+3. ++++++++++[&gt;+++++++&gt;++++++++++&gt;+++&gt;+&lt;&lt;&lt;&lt;-]&gt;++.&gt;+.+++++++..+++.&gt;++.&lt;&lt;+++++++++++++++.&gt;.+++.------.--------.&gt;+.&gt;.</pre>
+</div>
+<div class="line-block">
+<div class="line">一方で、以下のような文字列は [ や ]が対応していないので、 Brainfuck のプログラムではない、こととします。</div>
+<div class="line">(このような文字列も適当な修正をすることに決めておけば、Brainfuck のプログラムとできます)</div>
+</div>
+<div class="highlight-python"><pre>1. +++[&gt;+++&lt;---[]
+2. -]]</pre>
+</div>
+</div>
+<div class="section" id="id6">
+<h3><a class="toc-backref" href="#id1">2.3. Brainfuck の動作</a></h3>
+<div class="line-block">
+<div class="line">Brainfuck の動作について説明します。</div>
+</div>
+<div class="line-block">
+<div class="line">まず、 Brainfuck の処理系には、</div>
+<div class="line">プログラム, 配列, 配列の要素を指すポインタ, 入出力ストリーム</div>
+<div class="line">がありました。</div>
+<div class="line">プログラムを読む最初の段階、初期状態では、ポインタは配列の左端を指していて、</div>
+<div class="line">配列の全要素が 0 で初期化されています。</div>
+<div class="line">そして、プログラムを読むごとに、各コマンドを実行していきます。</div>
+</div>
+<div class="line-block">
+<div class="line">各コマンドの意味を説明しましょう。</div>
+</div>
+<div class="section" id="id7">
+<h4>2.3.1. &gt; &lt;</h4>
+<ul class="simple">
+<li>&gt; : ポインタをインクリメントする</li>
+<li>&lt; : ポインタをデクリメントする</li>
+</ul>
+<a class="reference internal image-reference" href="../_images/value.png"><img alt="../_images/value.png" src="../_images/value.png" style="width: 665.7px; height: 267.4px;" /></a>
+</div>
+<div class="section" id="id8">
+<h4>2.3.2. + -</h4>
+<ul class="simple">
+<li>+ : ポインタの指す値をインクリメントする</li>
+<li>- : ポインタの指す値をデクリメントする</li>
+</ul>
+<a class="reference internal image-reference" href="../_images/pointer.png"><img alt="../_images/pointer.png" src="../_images/pointer.png" style="width: 665.7px; height: 267.4px;" /></a>
+</div>
+<div class="section" id="id9">
+<h4>2.3.3. . ,</h4>
+<ul class="simple">
+<li>. : 入力から 1バイト読み込んで、ポインタの指す先に代入する</li>
+<li>, : ポインタの指す値を出力する</li>
+</ul>
+<p>ただし、どちらも ASCII code を用いて、入出力を行う。</p>
+<a class="reference internal image-reference" href="../_images/inout.png"><img alt="../_images/inout.png" src="../_images/inout.png" style="width: 665.7px; height: 267.4px;" /></a>
+</div>
+<div class="section" id="id10">
+<h4>2.3.4. [ ]</h4>
+<ul class="simple">
+<li>[ : ポインタが指す値が 0 なら、対応する ] の直後へジャンプする</li>
+<li>] : ポインタが指す値が 0 でないなら、対応する [ にジャンプする</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<div class="last line-block">
+<div class="line">] について、[ に戻った時に [ ] のブロックを抜けるかどうか見れば 動作は同じなので、</div>
+<div class="line">以下では ] を読んだときは、必ず一度 [ に戻ることにする。</div>
+</div>
+</div>
+<a class="reference internal image-reference" href="../_images/loop.png"><img alt="../_images/loop.png" src="../_images/loop.png" style="width: 665.7px; height: 267.4px;" /></a>
+</div>
+</div>
+<div class="section" id="id11">
+<h3><a class="toc-backref" href="#id1">2.4. Brainfuck プログラムの例</a></h3>
+<div class="line-block">
+<div class="line">以上で、大体 Brainfuck の動作についてわかったことにして、例を出してみます。</div>
+</div>
+<div class="highlight-python"><pre>1. +++++++++++++++++++++++++++++++++++++++++++++++++. ('+'が49個続いたあと、'.'がある)
+2. +++++++[-&gt;+++++++&lt;]&gt;.</pre>
+</div>
+<div class="line-block">
+<div class="line">Brainfuck では初期状態では、ポインタは配列の左端を指し、配列の要素は 0 だったことを思い出しましょう。</div>
+</div>
+<div class="section" id="id12">
+<h4>例1. について</h4>
+<div class="line-block">
+<div class="line">&#8216;+&#8217; が49個あるので、 &#8216;.&#8217; を実行するときポインタの指す要素は 0+49=49 となっています。</div>
+<div class="line">ASCII コードで 49 は数字の 1 のことなので、1 が出力されます。</div>
+</div>
+</div>
+<div class="section" id="id13">
+<h4>例2. について</h4>
+<div class="line-block">
+<div class="line">&#8216;[&#8216; の手前までで &#8216;+&#8217; が 7個あるので配列の要素は [_7, 0, 0, 0...] となって、ポインタは左端を指しています。</div>
+<div class="line">(_ はポインタの指す場所を表すことにします。)</div>
+<div class="line">&#8216;[&#8216; を読む時、ポインタの指す値は 7 (つまり 0 でない)なので、[]の中身を実行します。</div>
+<div class="line">&#8216;[ ]&#8217;の中身は何をするかというと、</div>
+</div>
+<blockquote>
+<div><ol class="arabic">
+<li><dl class="first docutils">
+<dt>ポインタの指す値を -1</dt>
+<dd><p class="first last">[_6, 0, 0, ...]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>ポインタを右へずらす</dt>
+<dd><p class="first last">[6, _0, 0, ...]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>&#8220;ポインタの指す値を +1&#8221; を 7回</dt>
+<dd><p class="first last">[6, _7, 0, ...]</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>ポインタを左へずらす</dt>
+<dd><p class="first last">[_6, 7, 0, ...]</p>
+</dd>
+</dl>
+</li>
+</ol>
+</div></blockquote>
+<div class="line-block">
+<div class="line">という処理をします。つまり、ポインタの指す値を -1 して、右の値を +7 する処理です。</div>
+<div class="line">この処理が、 ポインタの指す値が 0 になるまで続くので、&#8217;[ ]&#8217; を抜けるときには、[0, _49, 0, ...] となります。</div>
+<div class="line">よって、 例1 と同様に、数字の 1 が出力されます。</div>
+</div>
+<div class="line-block">
+<div class="line">長々と Brainfuck の説明をしたので、次は Haskell で Brainfuck を実装することを考えましょう。</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="brainfuck-by-haskell">
+<h2><a class="toc-backref" href="#id1">3. Brainfuck by Haskell</a></h2>
+<div class="line-block">
+<div class="line">ここからは、 Haskell で上に述べたような Brainfuck (と&#8221;同じ&#8221;もの)を実装しましょう。</div>
+</div>
+<div class="section" id="id14">
+<h3><a class="toc-backref" href="#id1">3.1. 構文</a></h3>
+<div class="line-block">
+<div class="line">まず、 2.2. でやったように Brainfuck のプログラムと呼べる列を定義しましょう。</div>
+</div>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="kr">data</span> <span class="kt">Br</span> <span class="ow">=</span> <span class="kt">Next</span> <span class="o">|</span> <span class="kt">Prev</span> <span class="o">|</span> <span class="kt">Succ</span> <span class="o">|</span> <span class="kt">Pred</span> <span class="o">|</span> <span class="kt">Out</span> <span class="o">|</span> <span class="kt">In</span> <span class="o">|</span> <span class="kt">Loop</span> <span class="p">[</span><span class="kt">Br</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>このとき、 Br のリスト [Br] がここで実装する Brainfuck のプログラムの全体となります。</p>
+</div>
+<div class="section" id="id15">
+<h3><a class="toc-backref" href="#id1">3.2. Brainfuck との対応</a></h3>
+<div class="line-block">
+<div class="line">Brainfuck のプログラムと、上で定義した [Br] を対応させましょう。</div>
+<div class="line">各コマンドの対応は次のようにします。</div>
+</div>
+<table border="1" class="docutils">
+<colgroup>
+<col width="42%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Brainfuck</th>
+<th class="head">[Br]</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>&gt;</td>
+<td>Next</td>
+</tr>
+<tr class="row-odd"><td>&lt;</td>
+<td>Prev</td>
+</tr>
+<tr class="row-even"><td>+</td>
+<td>Succ</td>
+</tr>
+<tr class="row-odd"><td>-</td>
+<td>Pred</td>
+</tr>
+<tr class="row-even"><td>.</td>
+<td>Out</td>
+</tr>
+<tr class="row-odd"><td>,</td>
+<td>In</td>
+</tr>
+<tr class="row-even"><td>[ br ]</td>
+<td>Loop [ br ]</td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line">プログラムの対応を与える関数 translate の型は、</div>
+</div>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">transelate</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Br</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">となるはずです。(めんどくさいので、与えられる文字列は [ ]がちゃんと対応しているものとする。)</div>
+<div class="line">プログラムを前から読んでいって、表の通りに対応させようとすると、</div>
+<div class="line">まだ読んでいない残りの文字列を表した方が便利なので、次の型を持つ関数 pretranslate を考えます。</div>
+</div>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">pretranslate</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="kt">Br</span><span class="p">],</span> <span class="kt">String</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">というわけで、 translate, pretranslate を実装します。</div>
+</div>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">translate</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Br</span><span class="p">]</span>
+<span class="nf">translate</span> <span class="ow">=</span> <span class="n">fst</span> <span class="o">.</span> <span class="n">pretranslate</span>
+
+<span class="p">(</span><span class="o">+++</span><span class="p">)</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="n">a</span><span class="p">],</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="n">a</span><span class="p">],</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">(</span><span class="o">+++</span><span class="p">)</span> <span class="n">s</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">s</span><span class="kt">:</span><span class="n">t</span><span class="p">,</span> <span class="n">str</span><span class="p">)</span>
+
+<span class="nf">pretranslate</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="kt">Br</span><span class="p">],</span> <span class="kt">String</span><span class="p">)</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;&gt;&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Next</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;&lt;&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Prev</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;+&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;-&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Pred</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;.&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Out</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">In</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;[&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">let</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">pretranslate</span> <span class="n">str</span> <span class="kr">in</span> <span class="kt">Loop</span> <span class="n">bf</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">xs</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;]&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="n">str</span><span class="p">)</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="kr">_</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="kt">[]</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>ここで、</p>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;[&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">let</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">pretranslate</span> <span class="n">str</span> <span class="kr">in</span> <span class="kt">Loop</span> <span class="n">bf</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">xs</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;]&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="n">str</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">の行を説明します。</div>
+<div class="line">配列は、a:b:c:...:[] という形なので、 pretranslate str の評価で、 str の中に &#8216;]&#8217; という文字があれば、</div>
+<div class="line">br1 +++ br2 +++ ... +++ ([], xs) = (bf,xs) という評価ができます。</div>
+<div class="line">xs は &#8216;]&#8217; の後の文字列になっているので、あとは、 xs を pretranslate しておけば、対応を定めることができます。</div>
+</div>
+</div>
+<div class="section" id="id16">
+<h3><a class="toc-backref" href="#id1">3.3. 実行</a></h3>
+<div class="line-block">
+<div class="line">Brainfuck では、ポインタが配列のどの場所を指すか、という状態があるので、</div>
+<div class="line">ポインタが指す場所と、その前後の配列を合わせて、1つの状態だと思えば良いでしょう。</div>
+</div>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="kr">type</span> <span class="kt">State</span> <span class="ow">=</span> <span class="p">([</span><span class="kt">Int</span><span class="p">],</span> <span class="kt">Int</span><span class="p">,</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">あとは、各コマンドの意味にしたがって、[Br]→IO() を定めれば良いでしょう。</div>
+</div>
+</div>
+</div>
+<div class="section" id="id17">
+<h2><a class="toc-backref" href="#id1">4. まとめ</a></h2>
+<ul>
+<li><p class="first">Haskell で Brainfuck と似たようなものができた。</p>
+</li>
+<li><p class="first">括弧のような、単独では意味が決まらないコマンドを含む文字列のパースができた。</p>
+</li>
+<li><dl class="first docutils">
+<dt>もっとうまく書かれてるブログを見つけた...つらい。 <a class="reference external" href="http://d.hatena.ne.jp/itchyny/20121201/1354333490">Haskellで書くBrainfuckインタープリタ - プログラムモグモグ</a></dt>
+<dd><ul class="first last simple">
+<li>特に、モナドの扱いと、 Brainfuck の実行部分のコードが全く異なっている。</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="id18">
+<h2><a class="toc-backref" href="#id1">5. コード</a></h2>
+<p>以下は、コードの全体像です。</p>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="kr">import</span> <span class="nn">Data.Char</span> <span class="p">(</span><span class="nf">chr</span><span class="p">,</span> <span class="nf">ord</span><span class="p">)</span>
+<span class="c1">--</span>
+<span class="c1">-- Define Brainfuck syntax</span>
+<span class="c1">--</span>
+<span class="kr">data</span> <span class="kt">Br</span> <span class="ow">=</span> <span class="kt">Next</span> <span class="o">|</span> <span class="kt">Prev</span> <span class="o">|</span> <span class="kt">Succ</span> <span class="o">|</span> <span class="kt">Pred</span> <span class="o">|</span> <span class="kt">Out</span> <span class="o">|</span> <span class="kt">In</span> <span class="o">|</span> <span class="kt">Loop</span> <span class="p">[</span><span class="kt">Br</span><span class="p">]</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">,</span> <span class="kt">Eq</span><span class="p">)</span>
+
+<span class="c1">--</span>
+<span class="c1">-- Parser</span>
+<span class="c1">--</span>
+<span class="nf">translate</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="kt">Br</span><span class="p">]</span>
+<span class="nf">translate</span> <span class="ow">=</span> <span class="n">fst</span> <span class="o">.</span> <span class="n">pretranslate</span>
+<span class="c1">--</span>
+<span class="c1">-- Translater for translate</span>
+<span class="c1">--</span>
+<span class="p">(</span><span class="o">+++</span><span class="p">)</span> <span class="ow">::</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="n">a</span><span class="p">],</span> <span class="n">b</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="n">a</span><span class="p">],</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">(</span><span class="o">+++</span><span class="p">)</span> <span class="n">s</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="n">s</span><span class="kt">:</span><span class="n">t</span><span class="p">,</span> <span class="n">str</span><span class="p">)</span>
+<span class="nf">pretranslate</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="p">([</span><span class="kt">Br</span><span class="p">],</span> <span class="kt">String</span><span class="p">)</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;&gt;&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Next</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;&lt;&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Prev</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;+&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Succ</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;-&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Pred</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;.&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">Out</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;,&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kt">In</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;[&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">let</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="n">xs</span><span class="p">)</span> <span class="ow">=</span> <span class="n">pretranslate</span> <span class="n">str</span> <span class="kr">in</span> <span class="kt">Loop</span> <span class="n">bf</span> <span class="o">+++</span> <span class="n">pretranslate</span> <span class="n">xs</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="sc">&#39;]&#39;</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="n">str</span><span class="p">)</span>
+<span class="c1">-- Ignoring invarid chars</span>
+<span class="nf">pretranslate</span> <span class="p">(</span><span class="kr">_</span><span class="kt">:</span><span class="n">str</span><span class="p">)</span> <span class="ow">=</span> <span class="n">pretranslate</span> <span class="n">str</span>
+<span class="nf">pretranslate</span> <span class="kt">[]</span> <span class="ow">=</span> <span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="kt">[]</span><span class="p">)</span>
+
+<span class="c1">--</span>
+<span class="c1">-- State of Brainfuck : consist of array and pos.</span>
+<span class="c1">--</span>
+<span class="kr">type</span> <span class="kt">State</span> <span class="ow">=</span> <span class="p">([</span><span class="kt">Int</span><span class="p">],</span> <span class="kt">Int</span><span class="p">,</span> <span class="p">[</span><span class="kt">Int</span><span class="p">])</span>
+<span class="c1">-- Execution Brainfuck syntax</span>
+<span class="nf">exec</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">Br</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">IO</span><span class="p">([</span><span class="kt">Br</span><span class="p">],</span> <span class="kt">State</span><span class="p">)</span>
+<span class="nf">exec</span> <span class="n">bf</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">step</span> <span class="n">bf</span> <span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">[]</span><span class="p">)</span>
+  <span class="c1">-- putStrLn $ show (bf, state)</span>
+  <span class="n">exec&#39;</span> <span class="n">bf</span> <span class="n">state</span>
+
+<span class="nf">exec&#39;</span> <span class="n">bf</span> <span class="n">state</span>
+  <span class="o">|</span> <span class="n">bf</span> <span class="o">==</span> <span class="kt">[]</span>  <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+  <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="kr">do</span>
+      <span class="p">(</span><span class="n">bf&#39;</span><span class="p">,</span> <span class="n">state&#39;</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">step</span> <span class="n">bf</span> <span class="n">state</span>
+      <span class="c1">-- putStrLn $ show (bf&#39;, state&#39;)</span>
+      <span class="c1">-- putStrLn $ show state&#39;</span>
+      <span class="n">exec&#39;</span> <span class="n">bf&#39;</span> <span class="n">state&#39;</span>
+
+<span class="nf">step</span> <span class="ow">::</span> <span class="p">[</span><span class="kt">Br</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="kt">State</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="p">([</span><span class="kt">Br</span><span class="p">],</span> <span class="kt">State</span><span class="p">)</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">Next:</span><span class="n">bf</span><span class="p">)</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="kt">[]</span><span class="p">)</span>            <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kt">[]</span><span class="p">))</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">Next:</span><span class="n">bf</span><span class="p">)</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="kt">:</span><span class="n">ys</span><span class="p">)</span>          <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="kt">:</span><span class="n">xs</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">ys</span><span class="p">))</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">Prev:</span><span class="n">bf</span><span class="p">)</span> <span class="n">state</span><span class="o">@</span><span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>      <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">Prev:</span><span class="n">bf</span><span class="p">)</span> <span class="p">(</span><span class="n">s</span><span class="kt">:</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>          <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">x</span><span class="kt">:</span><span class="n">ys</span><span class="p">))</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">Succ:</span><span class="n">bf</span><span class="p">)</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>            <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ys</span><span class="p">))</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">Pred:</span><span class="n">bf</span><span class="p">)</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>            <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ys</span><span class="p">))</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">Loop</span> <span class="kt">[]:</span><span class="n">bf</span><span class="p">)</span> <span class="n">state</span><span class="o">@</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>   <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+<span class="nf">step</span> <span class="n">br</span><span class="o">@</span><span class="p">(</span><span class="kt">Loop</span> <span class="n">s</span><span class="kt">:</span><span class="n">bf</span><span class="p">)</span> <span class="n">state</span><span class="o">@</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span> <span class="ow">=</span> <span class="kr">do</span>
+  <span class="p">(</span><span class="kr">_</span><span class="p">,</span> <span class="n">st</span><span class="o">@</span><span class="p">(</span><span class="n">xs&#39;</span><span class="p">,</span> <span class="n">x&#39;</span><span class="p">,</span> <span class="n">ys&#39;</span><span class="p">))</span> <span class="ow">&lt;-</span> <span class="p">(</span><span class="n">exec&#39;</span> <span class="n">s</span> <span class="n">state</span><span class="p">)</span>
+  <span class="kr">if</span> <span class="p">(</span> <span class="n">x&#39;</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span>
+     <span class="kr">then</span> <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="n">st</span><span class="p">)</span>
+     <span class="kr">else</span> <span class="n">return</span> <span class="p">(</span><span class="n">br</span><span class="p">,</span> <span class="n">st</span><span class="p">)</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">Out:</span><span class="n">bf</span><span class="p">)</span> <span class="n">state</span><span class="o">@</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>       <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">putChar</span> <span class="p">(</span><span class="n">chr</span> <span class="n">x</span><span class="p">)</span>
+  <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+<span class="nf">step</span> <span class="p">(</span><span class="kt">In:</span><span class="n">bf</span><span class="p">)</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>              <span class="ow">=</span> <span class="kr">do</span>
+  <span class="n">s</span> <span class="ow">&lt;-</span> <span class="n">getChar</span>
+  <span class="n">return</span> <span class="p">(</span><span class="n">bf</span><span class="p">,</span> <span class="p">(</span><span class="n">xs</span><span class="p">,</span><span class="n">ord</span>  <span class="n">s</span><span class="p">,</span> <span class="n">ys</span><span class="p">))</span>
+<span class="nf">step</span> <span class="kt">[]</span> <span class="n">state</span>                         <span class="ow">=</span> <span class="n">return</span> <span class="p">(</span><span class="kt">[]</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+
+<span class="c1">--</span>
+<span class="c1">-- Interpret &amp; Execution</span>
+<span class="c1">--</span>
+<span class="nf">interpreter</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">IO</span><span class="nb">()</span>
+<span class="nf">interpreter</span> <span class="n">str</span> <span class="ow">=</span> <span class="p">(</span><span class="n">exec</span> <span class="o">$</span> <span class="n">translate</span> <span class="n">str</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">return</span> <span class="nb">()</span><span class="p">)</span>
+
+<span class="nf">main</span> <span class="ow">::</span> <span class="kt">IO</span><span class="nb">()</span>
+<span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+   <span class="n">contents</span> <span class="ow">&lt;-</span> <span class="n">readFile</span> <span class="s">&quot;BrainFuck.txt&quot;</span>
+   <span class="n">interpreter</span> <span class="n">contents</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+ </div>
+<div id="sidebar">
+<div id="searchbox" style="display: none">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <div id="recentpost">
+<h3>Recentpages</h3>
+<b>2013-02-15</b><br /><div style="margin-left:16px"><a href="">Brainfuck</a><br /></div><b>2012-12-15</b><br /><div style="margin-left:16px"><a href="5.Natural.html">(代数的)データ型を定義する</a><br /></div><b>2012-12-02</b><br /><div style="margin-left:16px"><a href="4.Caesar.html">シーザー暗号</a><br /></div><div style="margin-left:16px"><a href="../notyet/5.RoadToSearchAlgorithmUsingTree.html">検索のための予備知識のメモ</a><br /></div><b>2012-11-13</b><br /><div style="margin-left:16px"><a href="2.LazyEvaluation.html">関数の評価についての注意</a><br /></div>
+  </div>
+  <div id="sidelinks">
+    <h3>Links</h3>
+    <ul>
+      <li><a href="http://sphinx-users.jp/">Sphinx-Users.jp</a></li>
+      <li><a href="http://www.haskell.org/haskellwiki/Haskell">HaskellWiki</a></li>
+      <li><a href="http://hackage.haskell.org/packages/hackage.html">hackageDB</a></li>
+    </ul>
+  </div>
+</div>
+
+      <div class="clearer"></div>
+    </div>
+<div id="related">
+  <ul class="link">
+    
+      <li><a href="5.Natural.html">Prev</a></li>
+    
+    
+      <li><a href="../Others.html">Next</a></li>
+    
+    <li><a href="../genindex.html">Index</a></li>
+  </ul>
+</div>
+
+<div id="footer">
+  &copy;copyright:2012, sakai <br />
+  Last update: Feb 15, 2013 <br />
+  Created using Sphinx 1.1.3
+</div>
+
+  </body>
+</html>

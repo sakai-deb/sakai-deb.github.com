@@ -1,0 +1,252 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>シーザー暗号 &mdash; LinuxとHaskell</title>
+    
+    <link rel="stylesheet" href="../_static/main.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="LinuxとHaskell" href="../index.html" />
+    <link rel="up" title="Study Haskell!!" href="../Study_Haskell.html" />
+    <link rel="next" title="(代数的)データ型を定義する" href="5.Natural.html" />
+    <link rel="prev" title="Haskell でのモジュール import" href="3.ModuleImport.html" /> 
+  </head>
+  <body>
+<div id="header">
+  <div id="globalnavi">
+    <ul>
+      <li><a href="../index.html">Main</a></li>
+      <li><a href="../aboutus/aboutus.html">About</a></li>
+      <li><a href="../references/refs.html">References</a></li>
+    </ul>
+  </div>
+  <div id="titledesign">
+<link href='http://fonts.googleapis.com/css?family=Bad+Script' rel='stylesheet' type='text/css'>
+    <h1><a href="../index.html">Study Haskell</a></h1>
+  </div>
+</div>
+
+
+
+
+
+    <div class="document">
+ <div id="document">
+  <div class="section" id="id1">
+<h1>シーザー暗号</h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">date:</th><td class="field-body">2012/11/30</td>
+</tr>
+</tbody>
+</table>
+<div class="contents local topic" id="id2">
+<p class="topic-title first">目次</p>
+<ul class="simple">
+<li><a class="reference internal" href="#id3" id="id8">1. 概要</a></li>
+<li><a class="reference internal" href="#id4" id="id9">2. シーザー暗号</a></li>
+<li><a class="reference internal" href="#id5" id="id10">3. 解読について</a></li>
+<li><a class="reference internal" href="#id6" id="id11">4. まとめ</a></li>
+<li><a class="reference internal" href="#id7" id="id12">5. コード</a></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id2">1. 概要</a></h2>
+<ol class="arabic simple">
+<li>実際にモジュールを使ってみる</li>
+<li>シーザー暗号のエンコード用の関数を作る</li>
+<li>解読を頻度分析でやってみる</li>
+</ol>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id2">2. シーザー暗号</a></h2>
+<div class="line-block">
+<div class="line">シーザー暗号は、いわゆる単一換字式の暗号です。</div>
+<div class="line">つまり、元々の文で1文字だったものが、暗号化の後にも1文字になり、文字置き換えのルールは文脈に依りません。</div>
+<div class="line">(ある&#8217;a&#8217;が&#8217;e&#8217;に置き換えられているなら、文章中のどこにあっても、&#8217;a&#8217;は&#8217;e&#8217;に置き換えられているということ。特に隣の文字や、出現回数に依存しません。)</div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<div class="last line-block">
+<div class="line">このページでは、文字は小文字のアルファベットのみであるとして考えています。</div>
+<div class="line">また、a, b, c, ..., x, y, z の順に順序が入っていて、さらに z の次は再び a であることにします。</div>
+</div>
+</div>
+<div class="line-block">
+<div class="line">シーザー暗号の文字の置き換えのルールは、&#8221;何文字ずらすか&#8221; で決まります。</div>
+<div class="line">例えば、 2文字ずらすシーザー暗号を考えれば、 &#8216;a&#8217;-&gt;&#8217;c&#8217;, &#8216;b&#8217;-&gt;&#8217;d&#8217;, &#8216;c&#8217;-&gt;&#8217;e&#8217;, ..., &#8216;x&#8217;-&gt;&#8217;z&#8217;, &#8216;y&#8217;-&gt;&#8217;a&#8217;, &#8216;z&#8217;-&gt;&#8217;b&#8217; というようになります。</div>
+</div>
+<div class="line-block">
+<div class="line">シーザー暗号は非常に単純な暗号で、復号するのも、 ずらした分を逆側にずらせばよいです。先ほどの例なら、2文字戻せば復号できることになります。</div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2><a class="toc-backref" href="#id2">3. 解読について</a></h2>
+<div class="line-block">
+<div class="line">よく知られているように、暗号の解読の手法として&#8221;頻度分析&#8221;というものがあります。</div>
+<div class="line">統計的によく使う文字とあまり使わない文字があり、それをヒントに解読をするというものです。</div>
+</div>
+<div class="line-block">
+<div class="line">英文の場合、e, t などは非常によく使われています。</div>
+<div class="line">例えば、暗号文に &#8216;g&#8217; が多かったとすると、&#8217;e&#8217; -&gt; &#8216;g&#8217; という置き換えの結果だと仮定して、2文字ずらすシーザー暗号で暗号化されたと仮定して、復号してみるのがよいでしょう。</div>
+</div>
+<div class="line-block">
+<div class="line">これは、統計的な出現頻度のみを手がかりにしているので、あまりうまくいかないこともあるかもしれません。</div>
+<div class="line">特に短文ではうまくいかない場合が多いと思います。</div>
+</div>
+</div>
+<div class="section" id="id6">
+<h2><a class="toc-backref" href="#id2">4. まとめ</a></h2>
+<div class="line-block">
+<div class="line">途中にコードを書くと長くなってしまうので、先にまとめをしておきます。</div>
+</div>
+<div class="line-block">
+<div class="line">まず、シーザー暗号では、鍵長(何文字ずらすか)が非常に制限されており、文字集合とその順序を固定した場合、短文では総当たりが可能です。</div>
+<div class="line">そして、たとえ総当たりできないほどの長文になったとすると、今度は、先ほどのような頻度分析の結果から復号される危険性があります。</div>
+<div class="line">例えば、文章中の位置に依存した置き換えを行うなどすれば頻度分析も困難になると思います。</div>
+</div>
+<div class="line-block">
+<div class="line">(もう少し現代的な暗号について知りたいところ...)</div>
+</div>
+</div>
+<div class="section" id="id7">
+<h2><a class="toc-backref" href="#id2">5. コード</a></h2>
+<div class="line-block">
+<div class="line">以下、Haskell のコードを貼り付けています。</div>
+<div class="line">今回は、 Haskell でしか書いていません。</div>
+<div class="line">ここでは、スペースやコンマといった、小文字のアルファベット以外は無視しています。</div>
+</div>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Data.Char</span> <span class="k">as</span> <span class="n">Char</span>
+
+<span class="c1">-- 小文字を小文字のまま文字をずらす</span>
+<span class="nf">chr2int</span> <span class="ow">::</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">Int</span>
+<span class="nf">chr2int</span> <span class="n">c</span> <span class="ow">=</span> <span class="kt">Char</span><span class="o">.</span><span class="n">ord</span> <span class="n">c</span> <span class="o">-</span> <span class="kt">Char</span><span class="o">.</span><span class="n">ord</span> <span class="n">&#39;a&#39;</span>
+<span class="nf">int2chr</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Char</span>
+<span class="nf">int2chr</span> <span class="n">n</span> <span class="ow">=</span> <span class="kt">Char</span><span class="o">.</span><span class="n">chr</span> <span class="p">(</span><span class="kt">Char</span><span class="o">.</span><span class="n">ord</span> <span class="n">&#39;a&#39;</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span>
+<span class="nf">shift</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">Char</span> <span class="ow">-&gt;</span> <span class="kt">Char</span>
+<span class="nf">shift</span> <span class="n">n</span> <span class="n">c</span>
+  <span class="o">|</span> <span class="kt">Char</span><span class="o">.</span><span class="n">isLower</span> <span class="n">c</span> <span class="ow">=</span> <span class="n">int2chr</span> <span class="o">$</span> <span class="p">(</span><span class="n">chr2int</span> <span class="p">(</span><span class="kt">Char</span><span class="o">.</span><span class="n">toLower</span> <span class="n">c</span><span class="p">)</span> <span class="o">+</span> <span class="n">n</span><span class="p">)</span> <span class="p">`</span><span class="n">mod</span><span class="p">`</span> <span class="mi">26</span>
+  <span class="o">|</span> <span class="n">otherwise</span> <span class="ow">=</span> <span class="n">c</span>
+<span class="c1">-- 単語をずらす</span>
+<span class="nf">wordShift</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">wordShift</span> <span class="n">n</span> <span class="n">str</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="n">shift</span> <span class="n">n</span><span class="p">)</span> <span class="n">str</span>
+
+<span class="c1">--</span>
+<span class="c1">-- Define : シーザー暗号</span>
+<span class="c1">--</span>
+<span class="c1">-- encode and decode</span>
+<span class="nf">encode</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">encode</span> <span class="n">n</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">unwords</span> <span class="o">$</span> <span class="n">map</span> <span class="p">(</span><span class="n">wordShift</span> <span class="n">n</span><span class="p">)</span> <span class="p">(</span><span class="n">words</span> <span class="n">xs</span><span class="p">)</span>
+<span class="nf">decode</span> <span class="n">n</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">encode</span> <span class="p">(</span><span class="n">negate</span> <span class="n">n</span><span class="p">)</span> <span class="n">xs</span>
+
+<span class="c1">--</span>
+<span class="c1">-- Cracking : 頻度分析</span>
+<span class="c1">--</span>
+<span class="nf">isKey</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">Eq</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">a</span> <span class="ow">-&gt;</span> <span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)]</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">isKey</span> <span class="n">x</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">any</span> <span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">x</span><span class="o">==</span><span class="n">k</span><span class="p">))</span> <span class="n">xs</span>
+<span class="c1">-- 各文字が使われている回数の調査</span>
+<span class="nf">freq</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="p">[(</span><span class="kt">Char</span><span class="p">,</span><span class="kt">Int</span><span class="p">)]</span>
+<span class="nf">freq</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">foldr</span> <span class="n">groupTapple</span> <span class="kt">[]</span> <span class="n">xs</span>
+          <span class="kr">where</span> <span class="n">groupTapple</span> <span class="n">x</span> <span class="n">ys</span> <span class="ow">=</span> <span class="kr">if</span> <span class="n">isKey</span> <span class="n">x</span> <span class="n">ys</span> <span class="kr">then</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">v</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="n">ys</span> <span class="kr">else</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="kt">:</span><span class="n">ys</span>
+<span class="c1">-- 各文字が使われている頻度の調査</span>
+<span class="nf">percent</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="p">[(</span><span class="kt">Char</span><span class="p">,</span><span class="kt">Float</span><span class="p">)]</span>
+<span class="nf">percent</span> <span class="n">xs</span> <span class="ow">=</span> <span class="n">map</span> <span class="p">(</span><span class="nf">\</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">fromIntegral</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">/</span> <span class="n">fromIntegral</span><span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span> <span class="p">))</span> <span class="p">(</span><span class="n">freq</span> <span class="n">xs</span><span class="p">)</span>
+<span class="c1">-- 各文字が使われる頻度の統計</span>
+<span class="c1">-- From : http://www.codeproject.com/Articles/10519/Crack-the-Modified-Caesar-Cipher-with-Relative-Fre</span>
+<span class="nf">statPercent</span> <span class="ow">::</span> <span class="p">[(</span><span class="kt">Char</span><span class="p">,</span><span class="kt">Float</span><span class="p">)]</span>
+<span class="nf">statPercent</span> <span class="ow">=</span> <span class="p">[(</span><span class="n">&#39;a&#39;</span><span class="p">,</span><span class="mf">6.63</span><span class="p">),(</span><span class="n">&#39;b&#39;</span><span class="p">,</span><span class="mf">1.2</span><span class="p">),(</span><span class="n">&#39;c&#39;</span><span class="p">,</span><span class="mf">2.27</span><span class="p">),(</span><span class="n">&#39;d&#39;</span><span class="p">,</span><span class="mf">3.45</span><span class="p">),(</span><span class="n">&#39;e&#39;</span><span class="p">,</span><span class="mf">10.3</span><span class="p">),(</span><span class="n">&#39;f&#39;</span><span class="p">,</span><span class="mf">1.92</span><span class="p">),(</span><span class="n">&#39;g&#39;</span><span class="p">,</span><span class="mf">1.44</span><span class="p">),(</span><span class="n">&#39;h&#39;</span><span class="p">,</span><span class="mf">4.82</span><span class="p">),(</span><span class="n">&#39;i&#39;</span><span class="p">,</span><span class="mf">5.79</span><span class="p">),(</span><span class="n">&#39;j&#39;</span><span class="p">,</span> <span class="mf">0.067</span><span class="p">),(</span><span class="n">&#39;k&#39;</span><span class="p">,</span><span class="mf">0.55</span><span class="p">),(</span><span class="n">&#39;l&#39;</span><span class="p">,</span><span class="mf">3.24</span><span class="p">),(</span><span class="n">&#39;m&#39;</span><span class="p">,</span><span class="mf">1.99</span><span class="p">),(</span><span class="n">&#39;n&#39;</span><span class="p">,</span><span class="mf">5.75</span><span class="p">),(</span><span class="n">&#39;o&#39;</span><span class="p">,</span><span class="mf">6.01</span><span class="p">),(</span><span class="n">&#39;p&#39;</span><span class="p">,</span><span class="mf">1.54</span><span class="p">),(</span><span class="n">&#39;q&#39;</span><span class="p">,</span><span class="mf">0.09</span><span class="p">),(</span><span class="n">&#39;r&#39;</span><span class="p">,</span><span class="mf">4.57</span><span class="p">),(</span><span class="n">&#39;s&#39;</span><span class="p">,</span><span class="mf">5.4</span><span class="p">),(</span><span class="n">&#39;t&#39;</span><span class="p">,</span><span class="mf">7.84</span><span class="p">),(</span><span class="n">&#39;u&#39;</span><span class="p">,</span><span class="mf">2.47</span><span class="p">),(</span><span class="n">&#39;v&#39;</span><span class="p">,</span><span class="mf">0.75</span><span class="p">),(</span><span class="n">&#39;w&#39;</span><span class="p">,</span><span class="mf">1.92</span><span class="p">),(</span><span class="n">&#39;x&#39;</span><span class="p">,</span><span class="mf">0.15</span><span class="p">),(</span><span class="n">&#39;y&#39;</span><span class="p">,</span><span class="mf">1.27</span><span class="p">),(</span><span class="n">&#39;z&#39;</span><span class="p">,</span><span class="mf">0.056</span><span class="p">)]</span>
+<span class="c1">-- 評価関数</span>
+<span class="nf">evaluate</span> <span class="ow">::</span> <span class="p">[(</span><span class="kt">Char</span><span class="p">,</span><span class="kt">Float</span><span class="p">)]</span> <span class="ow">-&gt;</span> <span class="p">[(</span><span class="kt">Char</span><span class="p">,</span><span class="kt">Float</span><span class="p">)]</span> <span class="ow">-&gt;</span> <span class="kt">Float</span>
+<span class="nf">evaluate</span> <span class="n">decrypt</span> <span class="n">stat</span> <span class="ow">=</span> <span class="n">sum</span> <span class="p">[</span> <span class="p">((</span><span class="n">c</span> <span class="o">-</span> <span class="n">s</span><span class="p">)</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">s</span> <span class="o">|</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">c</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">decrypt</span><span class="p">,</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">s</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">stat</span><span class="p">,</span><span class="n">k</span> <span class="o">==</span> <span class="n">t</span> <span class="p">]</span>
+<span class="c1">-- Crack</span>
+<span class="nf">decrypt</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+<span class="nf">decrypt</span> <span class="n">crypt</span> <span class="ow">=</span> <span class="n">decode</span> <span class="p">(</span><span class="n">shift</span><span class="p">)</span> <span class="n">crypt</span>
+                <span class="kr">where</span>
+                  <span class="n">shift</span> <span class="ow">=</span> <span class="n">head</span> <span class="o">$</span> <span class="n">minPosition</span> <span class="n">rotationDecryptTest</span>
+                  <span class="n">rotationDecryptTest</span> <span class="ow">=</span> <span class="p">[</span> <span class="n">evaluate</span> <span class="p">(</span><span class="n">percent</span> <span class="p">(</span><span class="n">decode</span> <span class="n">n</span> <span class="n">crypt</span><span class="p">))</span> <span class="n">statPercent</span> <span class="o">|</span> <span class="n">n</span> <span class="ow">&lt;-</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">length</span><span class="p">(</span><span class="n">statPercent</span><span class="p">)]</span> <span class="p">]</span>
+                  <span class="n">minPosition</span> <span class="n">xs</span> <span class="ow">=</span> <span class="p">[</span> <span class="n">n</span> <span class="o">|</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">x</span><span class="p">)</span> <span class="ow">&lt;-</span> <span class="n">zip</span> <span class="p">[</span><span class="mi">0</span><span class="o">..</span><span class="n">length</span><span class="p">(</span><span class="n">statPercent</span><span class="p">)]</span> <span class="n">xs</span><span class="p">,</span> <span class="n">x</span> <span class="o">==</span> <span class="n">minimum</span> <span class="n">xs</span><span class="p">]</span>
+
+<span class="c1">--</span>
+<span class="c1">-- 実際に確認</span>
+<span class="c1">--</span>
+<span class="c1">-- London Bridge</span>
+<span class="nf">string1</span> <span class="ow">=</span> <span class="n">map</span> <span class="kt">Char</span><span class="o">.</span><span class="n">toLower</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(`</span><span class="n">elem</span><span class="p">`</span> <span class="p">([</span><span class="n">&#39;a&#39;</span><span class="o">..</span><span class="n">&#39;z&#39;</span><span class="p">]</span> <span class="o">++</span> <span class="p">[</span><span class="sc">&#39;A&#39;</span><span class="o">..</span><span class="sc">&#39;Z&#39;</span><span class="p">]))</span> <span class="s">&quot;London Bridge is broken down,</span><span class="se">\n</span><span class="s">Broken down, broken down.</span><span class="se">\n</span><span class="s">London Bridge is broken down,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Build it up with wood and clay,</span><span class="se">\n</span><span class="s">Wood and clay, wood and clay,</span><span class="se">\n</span><span class="s">Build it up with wood and clay,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Wood and clay will wash away,</span><span class="se">\n</span><span class="s">Wash away, wash away,</span><span class="se">\n</span><span class="s">Wood and clay will wash away,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Build it up with bricks and mortar,</span><span class="se">\n</span><span class="s">Bricks and mortar, bricks and mortar,</span><span class="se">\n</span><span class="s">Build it up with bricks and mortar,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Bricks and mortar will not stay,</span><span class="se">\n</span><span class="s">Will not stay, will not stay,</span><span class="se">\n</span><span class="s">Bricks and mortar will not stay,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Build it up with iron and steel,</span><span class="se">\n</span><span class="s">Iron and steel, iron and steel,</span><span class="se">\n</span><span class="s">Build it up with iron and steel,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Iron and steel will bend and bow,</span><span class="se">\n</span><span class="s">Bend and bow, bend and bow,</span><span class="se">\n</span><span class="s">Iron and steel will bend and bow,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Build it up with silver and gold,</span><span class="se">\n</span><span class="s">Silver and gold, silver and gold,</span><span class="se">\n</span><span class="s">Build it up with silver and gold,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Silver and gold will be stolen away,</span><span class="se">\n</span><span class="s">Stolen away, stolen away,</span><span class="se">\n</span><span class="s">Silver and gold will be stolen away,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Set a man to watch all night,</span><span class="se">\n</span><span class="s">Watch all night, watch all night,</span><span class="se">\n</span><span class="s">Set a man to watch all night,</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Suppose the man should fall asleep,</span><span class="se">\n</span><span class="s">Fall asleep, fall asleep,</span><span class="se">\n</span><span class="s">Suppose the man should fall asleep?</span><span class="se">\n</span><span class="s">My fair lady.</span><span class="se">\n\n</span><span class="s">Give him a pipe to smoke all night,</span><span class="se">\n</span><span class="s">Smoke all night, smoke all night,</span><span class="se">\n</span><span class="s">Give him a pipe to smoke all night,</span><span class="se">\n</span><span class="s">My fair lady&quot;</span>
+<span class="c1">-- From Gentoo Wiki(http://www.gentoo.org/proj/en/qa/pms.xml)</span>
+<span class="nf">string2</span> <span class="ow">=</span> <span class="n">map</span> <span class="kt">Char</span><span class="o">.</span><span class="n">toLower</span> <span class="o">$</span> <span class="n">filter</span> <span class="p">(`</span><span class="n">elem</span><span class="p">`</span> <span class="p">([</span><span class="n">&#39;a&#39;</span><span class="o">..</span><span class="n">&#39;z&#39;</span><span class="p">]</span> <span class="o">++</span> <span class="p">[</span><span class="sc">&#39;A&#39;</span><span class="o">..</span><span class="sc">&#39;Z&#39;</span><span class="p">]))</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">In the past,the ebuild environment has been defined by what Portage has supported. With the advent of alternative package managers,such a moving standard is no longer sufficient. The Package Manager Specification (PMS) aims to solve this by defining,independent of any package manager,what is and is not allowed in the tree,and what ebuilds may assume about their environment.</span><span class="se">\n\n</span><span class="s">It is also required to document what each value of the EAPI ebuild variable actually means. At present PMS aims to document all Council - approved EAPIs.</span><span class="se">\n\n</span><span class="s">A git repository with the document&#39;s sources can be found at http://git.overlays.gentoo.org/gitweb/?p = proj/pms.git;a = summary. A convenient way to be up to date with the current document is the live ebuild found in the Gentoo repository,called app - doc/pms (TeX Live needs to be installed). Additionally the approved versions are available as ebuilds of that package,too and will install a normal PDF file only. &quot;</span>
+<span class="c1">-- テスト : true が返れば正しくクラックできることがわかる</span>
+<span class="nf">test</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Bool</span>
+<span class="nf">test</span> <span class="n">str</span> <span class="ow">=</span> <span class="n">str</span> <span class="o">==</span> <span class="p">(</span><span class="n">decrypt</span> <span class="n">str</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+ </div>
+<div id="sidebar">
+<div id="searchbox" style="display: none">
+  <form class="search" action="../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <div id="recentpost">
+<h3>Recentpages</h3>
+<b>2013-02-15</b><br /><div style="margin-left:16px"><a href="6.BrainFuck.html">Brainfuck</a><br /></div><b>2012-12-15</b><br /><div style="margin-left:16px"><a href="5.Natural.html">(代数的)データ型を定義する</a><br /></div><b>2012-12-02</b><br /><div style="margin-left:16px"><a href="">シーザー暗号</a><br /></div><div style="margin-left:16px"><a href="../notyet/5.RoadToSearchAlgorithmUsingTree.html">検索のための予備知識のメモ</a><br /></div><b>2012-11-13</b><br /><div style="margin-left:16px"><a href="2.LazyEvaluation.html">関数の評価についての注意</a><br /></div>
+  </div>
+  <div id="sidelinks">
+    <h3>Links</h3>
+    <ul>
+      <li><a href="http://sphinx-users.jp/">Sphinx-Users.jp</a></li>
+      <li><a href="http://www.haskell.org/haskellwiki/Haskell">HaskellWiki</a></li>
+      <li><a href="http://hackage.haskell.org/packages/hackage.html">hackageDB</a></li>
+    </ul>
+  </div>
+</div>
+
+      <div class="clearer"></div>
+    </div>
+<div id="related">
+  <ul class="link">
+    
+      <li><a href="3.ModuleImport.html">Prev</a></li>
+    
+    
+      <li><a href="5.Natural.html">Next</a></li>
+    
+    <li><a href="../genindex.html">Index</a></li>
+  </ul>
+</div>
+
+<div id="footer">
+  &copy;copyright:2012, sakai <br />
+  Last update: Feb 15, 2013 <br />
+  Created using Sphinx 1.1.3
+</div>
+
+  </body>
+</html>
