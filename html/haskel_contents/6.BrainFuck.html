@@ -90,6 +90,7 @@
 </div>
 <div class="section" id="id3">
 <h2><a class="toc-backref" href="#id1">2. Brainfuck とは</a></h2>
+<p>Brainfuck はプログラミング言語の1つです。</p>
 <div class="section" id="id4">
 <h3><a class="toc-backref" href="#id1">2.1. Brainfuck の概要</a></h3>
 <div class="line-block">
@@ -97,7 +98,7 @@
 <div class="line"><a class="reference external" href="http://en.wikipedia.org/wiki/Brainfuck">Brainfuck - Wikipedia</a></div>
 </div>
 <div class="line-block">
-<div class="line">まず、Brainfuck という言語は、次の8つのコマンドからなります。</div>
+<div class="line">まず、Brainfuck という言語は、次の8つのコマンドを持ちます。</div>
 </div>
 <div class="highlight-python"><pre>&gt; &lt; + - . , [ ]</pre>
 </div>
@@ -151,7 +152,10 @@ BF   = Comm (| Dust) | BF | [BF]</pre>
 </div>
 <div class="line-block">
 <div class="line">まず、 Brainfuck の処理系には、</div>
-<div class="line">プログラム, 配列, 配列の要素を指すポインタ, 入出力ストリーム</div>
+</div>
+<div class="highlight-python"><pre>プログラム, 配列, 配列の要素を指すポインタ, 入出力ストリーム</pre>
+</div>
+<div class="line-block">
 <div class="line">がありました。</div>
 <div class="line">プログラムを読む最初の段階、初期状態では、ポインタは配列の左端を指していて、</div>
 <div class="line">配列の全要素が 0 で初期化されています。</div>
