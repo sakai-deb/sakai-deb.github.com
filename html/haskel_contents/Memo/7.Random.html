@@ -1,0 +1,220 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Randoms &mdash; LinuxとHaskell</title>
+    
+    <link rel="stylesheet" href="../../_static/main.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="LinuxとHaskell" href="../../index.html" />
+    <link rel="up" title="Memo" href="../../Memo.html" />
+    <link rel="next" title="雑記" href="../../Others.html" />
+    <link rel="prev" title="Haskell でのモジュール import" href="3.ModuleImport.html" /> 
+  </head>
+  <body>
+<div id="header">
+  <div id="globalnavi">
+    <ul>
+      <li><a href="../../index.html">Main</a></li>
+      <li><a href="../../aboutus/aboutus.html">About</a></li>
+      <li><a href="../../references/refs.html">References</a></li>
+    </ul>
+  </div>
+  <div id="titledesign">
+<link href='http://fonts.googleapis.com/css?family=Bad+Script' rel='stylesheet' type='text/css'>
+    <h1><a href="../../index.html">Study Haskell</a></h1>
+  </div>
+</div>
+
+
+
+
+
+    <div class="document">
+ <div id="document">
+  <div class="section" id="randoms">
+<h1>Randoms</h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">date:</th><td class="field-body">28/02/2013</td>
+</tr>
+</tbody>
+</table>
+<div class="contents local topic" id="id1">
+<p class="topic-title first">目次</p>
+<ul class="simple">
+<li><a class="reference internal" href="#id2" id="id5">1. 概要</a></li>
+<li><a class="reference internal" href="#random" id="id6">2. random とその仲間</a><ul>
+<li><a class="reference internal" href="#random-randoms" id="id7">2.1. random, randoms</a></li>
+<li><a class="reference internal" href="#randomr-randomrs" id="id8">2.2. randomR, randomRs</a></li>
+<li><a class="reference internal" href="#randomio-randomrio" id="id9">2.3. randomIO, randomRIO</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id3" id="id10">3. 乱数ジェネレータ</a><ul>
+<li><a class="reference internal" href="#mkstdgen-int" id="id11">3.1 mkStdGen : Int を指定して、生成する</a></li>
+<li><a class="reference internal" href="#getstdgen" id="id12">3.2 getStdGen : グローバル乱数ジェネレータを使う</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4" id="id13">4. まとめ</a></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2><a class="toc-backref" href="#id1">1. 概要</a></h2>
+<ol class="arabic simple">
+<li>Haskell で 乱数っぽいのを作る方法のメモ</li>
+<li>参照透明性があるので、IO を使う</li>
+<li>System.Random のことだけ書いている</li>
+</ol>
+</div>
+<div class="section" id="random">
+<h2><a class="toc-backref" href="#id1">2. random とその仲間</a></h2>
+<div class="line-block">
+<div class="line">乱数のために、 System.Random でいくつかの関数が用意されています。</div>
+<div class="line">乱数ジェネレータについては、後述。</div>
+</div>
+<div class="section" id="random-randoms">
+<h3><a class="toc-backref" href="#id1">2.1. random, randoms</a></h3>
+<ul class="simple">
+<li>random: 乱数ジェネレータとを受け取って、乱数と新しい乱数ジェネレータを返す</li>
+<li>randoms: 乱数ジェネレータとを受け取って、乱数列を返す</li>
+</ul>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">random</span> <span class="ow">::</span> <span class="p">(</span><span class="kt">RandomGen</span> <span class="n">g</span><span class="p">,</span> <span class="kt">Random</span> <span class="n">a</span><span class="p">)</span> <span class="ow">=&gt;</span> <span class="n">g</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+<span class="nf">randoms</span> <span class="ow">::</span> <span class="kt">RandomGen</span> <span class="n">g</span> <span class="ow">=&gt;</span> <span class="n">g</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="randomr-randomrs">
+<h3><a class="toc-backref" href="#id1">2.2. randomR, randomRs</a></h3>
+<ul class="simple">
+<li>randomR: random の返す乱数値の範囲を制限したバージョン</li>
+<li>randomRs: randoms の返す各乱数値の範囲を制限したバージョン</li>
+</ul>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">randomR</span> <span class="ow">::</span> <span class="kt">RandomGen</span> <span class="n">g</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span>  <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">g</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span>  <span class="n">g</span><span class="p">)</span>
+<span class="nf">randomRs</span> <span class="ow">::</span> <span class="kt">RandomGen</span> <span class="n">g</span> <span class="ow">=&gt;</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span>  <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="n">g</span> <span class="ow">-&gt;</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="randomio-randomrio">
+<h3><a class="toc-backref" href="#id1">2.3. randomIO, randomRIO</a></h3>
+<ul class="simple">
+<li>randomIO: random において、グローバル乱数ジェネレータを使うようにしたもの</li>
+<li>randomRIO: randomR において、グローバル乱数ジェネレータを使うようにしたもの</li>
+</ul>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">randomIO</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="n">a</span>
+<span class="nf">randomRIO</span> <span class="ow">::</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span>  <span class="n">a</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="n">a</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id3">
+<h2><a class="toc-backref" href="#id1">3. 乱数ジェネレータ</a></h2>
+<div class="line-block">
+<div class="line">ここからは、 上記の乱数ジェネレータを生成する方法についてメモしています。</div>
+<div class="line">大きく分けて、最初の乱数ジェネレータの生成方法は2つあります。</div>
+<div class="line">一旦乱数ジェネレータを生成できれば、上記の random(R) などを使うことで、</div>
+<div class="line">返り値として新しい乱数ジェネレータを得ることができ、次々と random(R) を呼ぶことで、擬似乱数を生成できます。</div>
+</div>
+<div class="section" id="mkstdgen-int">
+<h3><a class="toc-backref" href="#id1">3.1 mkStdGen : Int を指定して、生成する</a></h3>
+<div class="line-block">
+<div class="line">Int の値を受け取って、乱数ジェネレータを返します。</div>
+<div class="line">最初に選ぶ Int 値自体を変更することで、異なる乱数ジェネレータを得ることができ、</div>
+<div class="line">複数の乱数列が必要なときなどに重宝します。</div>
+</div>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">mkStdGen</span> <span class="ow">::</span> <span class="kt">Int</span> <span class="ow">-&gt;</span> <span class="kt">StdGen</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getstdgen">
+<h3><a class="toc-backref" href="#id1">3.2 getStdGen : グローバル乱数ジェネレータを使う</a></h3>
+<div class="line-block">
+<div class="line">グローバル乱数ジェネレータと呼ばれるものを使いましょう。</div>
+<div class="line">これは単一のジェネレータで、IOモナドによって管理されています。</div>
+<div class="line">グローバル乱数ジェネレータを更新する関数として、newStdGen が用意されています。</div>
+<div class="line">グローバル乱数ジェネレータを分割(split)して, 一方を返り値にして、もう片方で、グローバル乱数ジェネレータを更新しています。</div>
+</div>
+<div class="highlight-haskell"><div class="highlight"><pre><span class="nf">getStdGen</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="kt">StdGen</span>
+<span class="nf">newStdGen</span> <span class="ow">::</span> <span class="kt">IO</span> <span class="kt">StdGen</span>
+</pre></div>
+</div>
+<p>ここまでの内容で、基本的な擬似乱数生成ができるようになりました。</p>
+</div>
+</div>
+<div class="section" id="id4">
+<h2><a class="toc-backref" href="#id1">4. まとめ</a></h2>
+<ol class="arabic simple">
+<li>Haskell で擬似乱数を扱うための最小限のことを書いた。</li>
+<li>こういうものにも モナドは役立っているらしい。</li>
+</ol>
+</div>
+</div>
+
+
+ </div>
+<div id="sidebar">
+<div id="searchbox" style="display: none">
+  <form class="search" action="../../search.html" method="get">
+    <input type="text" name="q" />
+    <input type="submit" value="Go" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+  <div id="recentpost">
+<h3>Recentpages</h3>
+<b>2013-03-19</b><br /><div style="margin-left:16px"><a href="../Blog/8.Quine.html">Quine</a><br /></div><div style="margin-left:16px"><a href="../../Memo.html">Memo</a><br /></div><div style="margin-left:16px"><a href="../../Study_Haskell.html">Study Haskell!!</a><br /></div><div style="margin-left:16px"><a href="">Randoms</a><br /></div><div style="margin-left:16px"><a href="../../index.html">Main Page</a><br /></div>
+  </div>
+  <div id="sidelinks">
+    <h3>Links</h3>
+    <ul>
+      <li><a href="http://sphinx-users.jp/">Sphinx-Users.jp</a></li>
+      <li><a href="http://www.haskell.org/haskellwiki/Haskell">HaskellWiki</a></li>
+      <li><a href="http://hackage.haskell.org/packages/hackage.html">hackageDB</a></li>
+    </ul>
+  </div>
+</div>
+
+      <div class="clearer"></div>
+    </div>
+<div id="related">
+  <ul class="link">
+    
+      <li><a href="3.ModuleImport.html">Prev</a></li>
+    
+    
+      <li><a href="../../Others.html">Next</a></li>
+    
+    <li><a href="../../genindex.html">Index</a></li>
+  </ul>
+</div>
+
+<div id="footer">
+  &copy;copyright:2012, sakai <br />
+  Last update: Mar 19, 2013 <br />
+  Created using Sphinx 1.1.3
+</div>
+
+  </body>
+</html>
