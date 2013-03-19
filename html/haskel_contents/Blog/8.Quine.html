@@ -183,7 +183,7 @@
 <div class="line">もう1つ例を出します。</div>
 <div class="line">発想を全く変えて、1つの引数を受け取ったらそれを複製する関数を書きます。</div>
 <div class="line"><span class="math">\(\lambda\)</span> 計算を知っている人には自然なのかもしれません。</div>
-<div class="line"><span class="math">\((\lambda x.xx)(\lambda x.xx)\)</span> という項の類似のつもりで書きました。(私は:math:<cite>lambda</cite> 計算に詳しくないのでよく知りません。もしかしたら型付き:math:<cite>lambda</cite> 計算と呼ばれるやつには、もっとそれっぽいのがあるのかも知れません。)</div>
+<div class="line"><span class="math">\((\lambda x.xx)(\lambda x.xx)\)</span> という項の類似のつもりで書きました。(私は <span class="math">\(\lambda\)</span> 計算に詳しくないのでよく知りません。もしかしたら型付き <span class="math">\(\lambda\)</span> 計算と呼ばれるやつには、もっとそれっぽいのがあるのかも知れません。)</div>
 </div>
 <div class="highlight-haskell"><div class="highlight"><pre><span class="p">(</span><span class="nf">\</span><span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">putStr</span><span class="p">(</span><span class="n">x</span><span class="o">++</span><span class="s">&quot; &quot;</span><span class="o">++</span><span class="n">show</span> <span class="n">x</span><span class="p">))</span> <span class="s">&quot;(</span><span class="se">\\</span><span class="s">x -&gt; putStr(x++</span><span class="se">\&quot;</span><span class="s"> </span><span class="se">\&quot;</span><span class="s">++show x)&quot;</span>
 </pre></div>
